@@ -35,7 +35,7 @@ dependencies:
   - jupyter_highlight_selected_word=0.2.0=py38_1000
   - jupyter_latex_envs=1.4.6=py38_1000
   - jupyter_nbextensions_configurator=0.4.1=py38_0
-  - ld_impl_linux-64=2.34=h53a641e_0
+#  - ld_impl_linux-64=2.34=h53a641e_0
   - libffi=3.2.1=he1b5a44_1007
   - libgcc-ng=9.2.0=h24d8f2e_2
   - libgomp=9.2.0=h24d8f2e_2

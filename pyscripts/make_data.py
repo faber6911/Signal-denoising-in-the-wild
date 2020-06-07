@@ -20,8 +20,108 @@ if __name__ == "__main__":
     (https://www.openslr.org/17/) in order to develop an End-to-End system for signal denoising.')
 
     parser.add_argument('--main_path', type=str, help='Absolute path to the folder that contain SIWIS and MUSAN datasets.')
-    parser.add_argument('--lang', type=str, default='EN', help='SIWIS contains different languages: English, Italian, French, Dutch.\
+    parser.add_argument('--lang', type=list, default=['EN'], help='SIWIS contains different languages: English, Italian, French, Dutch.\
                         Default system use only English audios.')
+    parser.add_argument('--min_length', type=float, help='The minimum duration for the audio files to be considered from the system.')
+    parser.add_argument('--test_size', type=float, default=.1, help='Size for test set audios.')
 
     args = parser.parse_args()
     print(args.main_path, args.lang)
+    
+    #----- paths
+    # SIWIS database https://www.unige.ch/lettres/linguistique/research/latl/siwis/database/
+    # MUSAN dataset https://www.openslr.org/17/
+    
+    clean_audios = 'siwis_database/wav/'
+    noise_audios = 'musan'
+    info_clean_audios = 'siwis_database/info'
+    
+    clean_audios_path = os.path.join(args.main_path, clean_audios)
+    noise_audios_path = os.path.join(args.main_path, noise_audios)
+    print('Clean audios (siwis_database) directory: {}'.format(clean_audios_path))
+    print('Noise audios (musan dataset) directory: {}'.format(noise_audios_path))
+    
+    #----- utt2duration.scp file
+    print('Checking utt2duration.scp presence...')
+
+    if not os.path.isdir('../data'):
+        print('Making data dir...')
+        os.makedirs('../data')
+
+    if not os.path.isfile('../data/utt2duration.scp'):
+
+        print('Making utt2duration.scp...')
+        utt2duration = {}
+
+        info_dir = os.listdir(os.path.join(args.main_path, info_clean_audios))
+        audio_length_files = [elem for elem in info_dir if re.search('_audio_length.txt', elem)]
+
+        with open('../data/utt2duration.scp', 'w') as outfile:
+            durations = []
+            for file in audio_length_files:
+                for line in open(os.path.join(args.main_path, info_clean_audios, file)):
+                    utt, duration = line.rstrip().split()
+                    utt = utt.replace('.wav', '')
+                    durations.append(float(duration))
+                    outfile.write('{} {}\n'.format(utt, duration))
+                    utt2duration[utt] = float(duration)
+
+        outfile.close()
+        print('Clean audios measures:')
+        print('Max: {}\nMin: {}\nMean: {}\nMedian: {}'.format(max(durations), min(durations),
+                                                              np.mean(durations), np.median(durations)))
+    else:
+
+        print('/data/utt2duration.scp file already exists.')
+        
+        
+        
+    #----- train and test wav.scp
+    #need to make utt2duration dict
+    utts, paths, spks = [], [], []
+    
+    for language in args.lang:
+        for folder in os.listdir(os.path.join(clean_audios_path, language)):
+            for utt in os.listdir(os.path.join(clean_audios_path, language, folder)):
+                tmp = os.path.join(clean_audios_path, language, folder, utt)
+                if pathlib.Path(tmp).suffix == '.wav':
+                    if utt2duration[utt.replace('.wav', '')] > args.min_length:
+                        utts.append(utt.replace('.wav', ''))
+                        spks.append(utt.split('_')[2])
+                        paths.append(tmp)
+
+    X_train, X_test, y_train, y_test = train_test_split(np.array(paths), np.array(utts), test_size = args.test_size, stratify = spks)
+
+    if not os.path.isdir('../data/train'):
+        os.makedirs('../data/train')
+
+    if not os.path.isfile('../data/train/wav.scp'):
+
+        print('Making train...')
+        with open('../data/train/wav.scp', 'w') as outfile:
+            for train_counter, line in enumerate(np.column_stack((y_train, X_train))):
+                outfile.write('{} {}\n'.format(line[0], line[1]))
+
+        outfile.close()
+
+    else:
+        print('../data/test/wav.scp already exists.')
+
+    if not os.path.isdir('../data/test'):
+        os.makedirs('../data/test')
+
+    if not os.path.isfile('../data/test/wav.scp'):
+
+        print('Making test...')
+        with open('../data/test/wav.scp', 'w') as outfile:
+            for test_counter, line in enumerate(np.column_stack((y_test, X_test))):
+                outfile.write('{} {}\n'.format(line[0], line[1]))
+
+        outfile.close()
+
+        print('Detected {} audio files'.format(train_counter+test_counter))
+        print('{} in train'.format(train_counter))
+        print('{} in test'.format(test_counter))
+
+    else:
+        print('../data/test/wav.scp already exists.')

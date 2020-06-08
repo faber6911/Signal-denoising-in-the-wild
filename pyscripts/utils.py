@@ -3,6 +3,11 @@ import torch
 import librosa
 import kaldi_io
 
+
+def rms(x):
+    return np.sqrt(np.mean(np.square(x)))
+
+
 def add_noise(clean_audio, noise_audio, snr):
     '''
     This function add a noise audio file to a clean audio one using
@@ -22,8 +27,8 @@ def add_noise(clean_audio, noise_audio, snr):
     noiseSegment = noise_audio[ind:ind+clean_audio.size]
     
     # Signal Noise Ratio inspired by https://github.com/Sato-Kunihiko/audio-SNR
-    RMSspeech = np.sqrt(np.mean(clean_audio**2))
-    RMSnoise = np.sqrt(np.mean(noiseSegment**2))
+    RMSspeech = rms(clean_audio)
+    RMSnoise = rms(noiseSegment)
     a = float(snr) / 20
     adjustedRMSnoise = RMSspeech / (10**a)
     

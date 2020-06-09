@@ -2,3 +2,5 @@
 *.ark
 */__pycache__
 .ipynb_checkpoints
+data/serialized_train_data
+data/serialized_test_data

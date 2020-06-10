@@ -43,7 +43,7 @@ class DenoiseDataset(torch.utils.data.Dataset):
     """PyTorch datalaoder for processing 'uncompressed' Kaldi feats.scp. It returns noisy audio
     with their corresponding clean audio file.
     """
-    def __init__(self, scp_file, min_length):
+    def __init__(self, scp_file, min_length, transform = None):
         """
         Preprocess Kaldi feats.scp here
         @params:
@@ -61,6 +61,7 @@ class DenoiseDataset(torch.utils.data.Dataset):
         self.noisy_audios = np.array(self.noisy_audios)
         self.clean_audios  = np.array(self.clean_audios)
         self.seq_len = min_length*16000
+        self.transform = transform
         print("Totally "+str(len(self.noisy_audios))+" samples")
     
     def __len__(self):
@@ -85,8 +86,12 @@ class DenoiseDataset(torch.utils.data.Dataset):
         y, _ = librosa.load(self.clean_audios[index], sr = 16000)
         y = y[pin:pin+self.seq_len]
         
-        return chunk_mat, y
-
+        if self.transform:
+            chunk_mat = self.transform(chunk_mat)
+            y = self.transform(y)
+        
+        return chunk_mat.reshape(1, -1), y.reshape(1, -1)
+    
     
 class AudioDataset(torch.utils.data.Dataset):
     """

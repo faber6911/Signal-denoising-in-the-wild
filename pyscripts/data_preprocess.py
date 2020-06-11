@@ -19,12 +19,11 @@ import sys
 parser = argparse.ArgumentParser(description='This program preprocess audio data and create two ark files, one for train and one for test data, with associated scp files. The clean audio and the noisy audio are associated with the label of the speaker.')
 
 parser.add_argument('--abs_path', type=str, help='The absolute path to the project folder')
-
 parser.add_argument('--train_augmentation', type=int, default=1,
                     help='The augmentation parameter for the training set. The parameter is multiplied by 3.')
 parser.add_argument('--test_augmentation', type=int, default=1,
                     help='The augmentation parameter for the test set. The parameter is multiplied by 3.')
-parser.add_argument('--compression_method', type=int, default=2,
+parser.add_argument('--compression_method', type=int, default=1,
                     help='The compression method used by kaldiio for the ark files. Default is 3, available values are [1, 2, 3].')
 parser.add_argument('--sample_rate', type=int, default=16000,
                     help='The sample rate used for the import from librosa.')
@@ -51,8 +50,8 @@ if __name__ == "__main__":
 
     
     start = time.time()
-    print(abs_path)
-    print(ark_path_train)
+    #print(abs_path)
+    #print(ark_path_train)
     
     if not os.path.isfile(ark_path_train):
     

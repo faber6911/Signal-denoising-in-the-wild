@@ -1,4 +1,4 @@
-#!/root/anaconda3/envs/kalditorch/bin/python
+#!/home/faber6911/anaconda3/envs/kalditorch/bin/python
 
 #----- import packages
 
@@ -18,24 +18,19 @@ import sys
 
 parser = argparse.ArgumentParser(description='This program preprocess audio data and create two ark files, one for train and one for test data, with associated scp files. The clean audio and the noisy audio are associated with the label of the speaker.')
 
+parser.add_argument('--abs_path', type=str, help='The absolute path to the project folder')
+
 parser.add_argument('--train_augmentation', type=int, default=1,
                     help='The augmentation parameter for the training set. The parameter is multiplied by 3.')
 parser.add_argument('--test_augmentation', type=int, default=1,
                     help='The augmentation parameter for the test set. The parameter is multiplied by 3.')
-parser.add_argument('--compression_method', type=int, default=3,
+parser.add_argument('--compression_method', type=int, default=2,
                     help='The compression method used by kaldiio for the ark files. Default is 3, available values are [1, 2, 3].')
 parser.add_argument('--sample_rate', type=int, default=16000,
                     help='The sample rate used for the import from librosa.')
 parser.add_argument('--verbose', default=False, action='store_true')
 
 args = parser.parse_args()
-
-
-#----- paths
-ark_path_train = '../data/train/train.ark'
-scp_path_train = '../data/train/train.scp'
-ark_path_test = '../data/test/test.ark'
-scp_path_test = '../data/test/test.scp'
 
 #----- parameters
 train_augmentation = args.train_augmentation
@@ -45,11 +40,21 @@ sample_rate = args.sample_rate
 
 
 #----- corpus
-if __name___ == "__main__":
+if __name__ == "__main__":
+    
+    #----- paths
+    abs_path = args.abs_path
+    ark_path_train = os.path.join(abs_path, 'data/train/train.ark')
+    scp_path_train = os.path.join(abs_path, 'data/train/train.scp')
+    ark_path_test = os.path.join(abs_path, 'data/test/test.ark')
+    scp_path_test = os.path.join(abs_path, 'data/test/test.scp')
+
     
     start = time.time()
+    print(abs_path)
+    print(ark_path_train)
     
-    if not os.path.isfile('../data/train/train.ark'):
+    if not os.path.isfile(ark_path_train):
     
         print('\n\nAdding noise to train audio and augmenting each file {} times'.format(train_augmentation*3))
         writer = WriteHelper('ark,scp:{},{}'.format(ark_path_train, scp_path_train), compression_method=compression_method)

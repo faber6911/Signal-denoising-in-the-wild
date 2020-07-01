@@ -110,7 +110,7 @@ class AudioDataset(torch.utils.data.Dataset):
 class SequenceDataset(torch.utils.data.Dataset):
     """PyTorch datalaoder for processing 'uncompressed' Kaldi feats.scp
     """
-    def __init__(self, scp_file, utt2spkid_file, min_length):
+    def __init__(self, scp_file, utt2spkid_file, min_length, colab = False):
         """Preprocess Kaldi feats.scp here and balance the training set
         """
         self.rxfiles, self.labels, self.utt2spkid = [], [], {}
@@ -126,7 +126,10 @@ class SequenceDataset(torch.utils.data.Dataset):
         max_id_count = int((max(id_count.values())+1)/2)
         
         for line in open(scp_file):
-            utt, rxfile = line.rstrip().split()
+            if colab:
+                utt, rxfile = line.rstrip().split('\t')
+            else:
+                utt, rxfile = line.rstrip().split()
             label = self.utt2spkid[utt]
             repetition = max(1, max_id_count // id_count[label])
             self.rxfiles.extend([rxfile] * repetition)

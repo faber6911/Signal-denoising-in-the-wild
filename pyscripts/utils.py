@@ -1,5 +1,6 @@
 import numpy as np
 import librosa
+import os
 
 def rms(x):
     return np.sqrt(np.mean(np.square(x)))
@@ -83,3 +84,26 @@ class ScheduledOptim(object):
         self.n_current_steps = state_dict['n_current_steps']
         self.delta = state_dict['delta']
         self.optimizer.load_state_dict(state_dict['optimizer'])
+        
+        
+def change_path_scp(infile, outfile, old_abs_path, new_abs_path, separator):
+  '''
+  Change the abs path in the SCP file in order to point to the associated ark file.
+  @Params:
+    infile (path): path to the train.scp file.
+    outfile (path): path to the train<Machine>.scp file.
+    old_abs_path (path): the old abs path. ['/home/faber6911/kaldi/egs/'].
+    new_abs_path (path): depends to the path where the repository is cloned.
+  '''
+  with open(outfile, 'w') as f:
+    for line in open(infile):
+      utt, path = line.rstrip().split()
+      path = path.replace(old_abs_path, new_abs_path)
+      #print(utt, path)
+      f.write('{}{}{}\n'.format(utt, separator, path))
+
+  f.close()
+
+  print('Done')
+
+  print(os.popen('head {}'.format(outfile)).read())

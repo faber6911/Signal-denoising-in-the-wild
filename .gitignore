@@ -4,3 +4,4 @@
 .ipynb_checkpoints
 data/serialized_train_data
 data/serialized_test_data
+data/VoxCeleb1_test

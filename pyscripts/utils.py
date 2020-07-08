@@ -1,6 +1,9 @@
 import numpy as np
 import librosa
 import os
+import torch
+import matplotlib.pyplot as plt
+
 
 def rms(x):
     return np.sqrt(np.mean(np.square(x)))
@@ -107,3 +110,64 @@ def change_path_scp(infile, outfile, old_abs_path, new_abs_path, separator):
   print('Done')
 
   print(os.popen('head {}'.format(outfile)).read())
+  
+  
+def l1_l2_loss(output, target):
+  a = torch.nn.L1Loss()(output, target)
+  b = torch.nn.MSELoss()(output, target)
+  loss = a + b
+  return loss
+
+def MAPELoss(output, target):
+  return torch.mean(torch.abs((target - output) / target))
+
+def EnergyConservingLoss(data, output, target):
+  '''
+  Energy Conserving Loss in according to "A Wavenet for Speech Denoising", D. Rethage, J. Pons, X. Sierra, 2017
+  @Params:
+  data (Tensor): Noisy audio
+  output (Tensor): Denoised audio
+  target(Tensor): Clean audio
+  '''
+  a = torch.nn.L1Loss(reduction = 'mean')(output, target)
+  noise = data - target
+  noise_estimated = data - output
+  b = torch.nn.L1Loss(reduction = 'mean')(noise_estimated, noise)
+  loss = a + b
+  return loss
+  
+def plot_modelPerformance(history, clean, dirty):
+  plt.figure(figsize = (30, 6))
+  plt.subplot(1, 3, 1)
+  plt.plot(history['train'], label = 'loss')
+  plt.plot(history['validation'], label = 'val_loss')
+  plt.legend()
+  #plt.tight_layout()
+  plt.xlabel('Epoch')
+  plt.ylabel('Loss')
+  plt.title('Loss plot')
+  plt.subplot(1, 3, 2)
+  #idx = np.random.randint(len(test_data.dataset))
+  #clean, dirty, _ = test_data.dataset[idx]
+  dirty = dirty.unsqueeze(0).cuda()
+  with torch.no_grad():
+    denoised = model(dirty)
+  denoised = denoised.cpu().squeeze(0)
+  dirty = dirty.cpu().squeeze(0)
+  #plt.plot(clean.squeeze(0).numpy(), color = 'blue', label = 'clean')
+  plt.plot(dirty.squeeze(0).numpy(), color = 'red', label = 'noisy')
+  #plt.plot(clean.squeeze(0).numpy(), color = 'green', label = 'clean')
+  plt.plot(denoised.squeeze(0).numpy(), color = 'blue', label = 'denoised', alpha = .8)
+  plt.legend()
+  #plt.tight_layout()
+  plt.xlabel('Time [ms]')
+  plt.ylabel('Amplitude')
+  plt.title('Denoise plot')
+  plt.subplot(1, 3, 3)
+  plt.plot(clean.squeeze(0).numpy(), color = 'green', label = 'clean')
+  plt.plot(denoised.squeeze(0).numpy(), color = 'blue', label = 'denoised', alpha = .6)
+  plt.legend()
+  plt.xlabel('Time [ms]')
+  plt.ylabel('Amplitude')
+  plt.title('Denoise plot')
+  plt.show()

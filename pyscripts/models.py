@@ -97,8 +97,8 @@ class ResidualConv1dGLU(nn.Module):
         x = self.conv1x1_out(x)
 
         x = (x + residual) * math.sqrt(0.5)
-        return torch.cat([x.unsqueeze(0), s.unsqueeze(0)], dim = 0)
-    
+        #return torch.cat([x.unsqueeze(0), s.unsqueeze(0)], dim = 0)
+        return x, s
     
 class DWaveNet(nn.Module):
     def __init__(self, in_channels, out_channels=1, bias=False,

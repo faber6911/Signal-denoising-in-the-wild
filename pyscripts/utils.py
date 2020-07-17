@@ -136,7 +136,7 @@ def EnergyConservingLoss(data, output, target):
   loss = a + b
   return loss
   
-def plot_modelPerformance(history, clean, dirty):
+def plot_modelPerformance(history, clean, dirty, model):
   plt.figure(figsize = (30, 6))
   plt.subplot(1, 3, 1)
   plt.plot(history['train'], label = 'loss')

@@ -1,7 +1,8 @@
 */.ipynb_checkpoints
+.ipynb_checkpoints
 *.ark
 */__pycache__
-.ipynb_checkpoints
+__pycache__
 data/serialized_train_data
 data/serialized_test_data
 data/VoxCeleb1_test

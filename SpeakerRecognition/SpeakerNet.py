@@ -246,6 +246,122 @@ class SpeakerNet(nn.Module):
 
         return (all_scores, all_labels);
 
+    ## ===== ===== ===== ===== ===== ===== ===== =====
+    ## Evaluate from list (with noise_coeff)
+    ## ===== ===== ===== ===== ===== ===== ===== =====
+
+    def comparativeEvaluationFromList(self, listfilename, noise_coeff, model, print_interval=5000, feat_dir='', test_path='', num_eval=10):
+        
+        self.eval();
+        #model.eval();
+        #model.cuda();
+        
+        # if snr < 10:
+        #     index = -13
+        # else:
+        #     index = -14
+        
+        lines          = []
+        files          = []
+        filedict       = {}
+        feats          = {}
+        #feats_denoised = {}
+        tstart         = time.time()
+
+        if feat_dir != '':
+            print('Saving temporary files to %s'%feat_dir)
+            if not(os.path.exists(feat_dir)):
+                os.makedirs(feat_dir)
+
+        ## Read all lines
+        with open(listfilename) as listfile:
+            while True:
+                line = listfile.readline();
+                if (not line): #  or (len(all_scores)==1000) 
+                    break;
+
+                data = line.split();
+
+                files.append(data[1])
+                files.append(data[2])
+                lines.append(line)
+
+        setfiles = list(set(files))
+        setfiles.sort()
+
+        ## Save all features to file
+        model.cuda()
+        model.eval()
+        for idx, file in enumerate(setfiles):
+
+            inp1 = loadWAV(os.path.join(test_path,file), self.__max_frames__, evalmode=True, num_eval=num_eval).cuda()
+            with torch.no_grad():
+                inp2 = model(inp1.unsqueeze(1)).detach().squeeze(1)
+            #inp2 = loadWAV(os.path.join(test_path,file[:index], 'denoised', file[index:]), self.__max_frames__, evalmode=True, num_eval=num_eval)
+            
+            inp3 = (inp1*noise_coeff + inp2*(1-noise_coeff)).cuda()
+            
+            with torch.no_grad():
+                #inp1_denoised = model.forward(inp1.unsqueeze(1))
+                ref_feat = self.__S__.forward(inp3).detach().cpu()
+            #    ref_feat_denoised = self.__S__.forward(model.forward(inp1.unsqueeze(1)).squeeze(1)).detach().cpu()
+
+            filename = '%06d.wav'%idx
+
+            if feat_dir == '':
+                feats[file]     = ref_feat
+                #feats_denoised[file] = ref_feat_denoised
+            else:
+                filedict[file]  = filename
+                torch.save(ref_feat,os.path.join(feat_dir,filename))
+
+            telapsed = time.time() - tstart
+
+            if idx % print_interval == 0:
+                sys.stdout.write("\rReading %d: %.2f Hz, embed size %d"%(idx,idx/telapsed,ref_feat.size()[1]));
+
+        print('')
+        all_scores = [];
+        all_labels = [];
+        tstart = time.time()
+
+        ## Read files and compute all scores
+        for idx, line in enumerate(lines):
+
+            data = line.split();
+
+            if feat_dir == '':
+                ref_feat = feats[data[1]].cuda()#*noise_coeff + feats_denoised[data[1]].cuda()*(1-noise_coeff)
+                com_feat = feats[data[2]].cuda()#*noise_coeff + feats_denoised[data[2]].cuda()*(1-noise_coeff)
+
+            else:
+                ref_feat = torch.load(os.path.join(feat_dir,filedict[data[1]])).cuda()
+                com_feat = torch.load(os.path.join(feat_dir,filedict[data[2]])).cuda()
+
+            if self.__test_normalize__:
+                ref_feat = F.normalize(ref_feat, p=2, dim=1)
+                com_feat = F.normalize(com_feat, p=2, dim=1)
+
+            dist = F.pairwise_distance(ref_feat.unsqueeze(-1).expand(-1,-1,num_eval), com_feat.unsqueeze(-1).expand(-1,-1,num_eval).transpose(0,2)).detach().cpu().numpy();
+
+            score = -1 * numpy.mean(dist);
+
+            all_scores.append(score);  
+            all_labels.append(int(data[0]));
+
+            if idx % print_interval == 0:
+                telapsed = time.time() - tstart
+                sys.stdout.write("\rComputing %d: %.2f Hz"%(idx,idx/telapsed));
+                sys.stdout.flush();
+
+        if feat_dir != '':
+            print(' Deleting temporary files.')
+            shutil.rmtree(feat_dir)
+
+        print('\n')
+
+        return (all_scores, all_labels);
+
 
     ## ===== ===== ===== ===== ===== ===== ===== =====
     ## Update learning rate

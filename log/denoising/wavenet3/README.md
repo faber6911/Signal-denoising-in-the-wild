@@ -1,0 +1,3 @@
+- loss &rarr; l1_l2_loss mean
+- target field length &rarr; 16000 with 16000 audios
+- last conv layers &rarr; 1024, 256

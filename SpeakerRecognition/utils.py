@@ -3,6 +3,7 @@ import librosa
 import os
 import torch
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 
 def rms(x):
@@ -129,14 +130,15 @@ def EnergyConservingLoss(data, output, target):
   output (Tensor): Denoised audio
   target(Tensor): Clean audio
   '''
-  a = torch.nn.L1Loss(reduction = 'mean')(output, target)
+  a = torch.nn.L1Loss(reduction = 'sum')(output, target)
   noise = data - target
   noise_estimated = data - output
-  b = torch.nn.L1Loss(reduction = 'mean')(noise_estimated, noise)
+  b = torch.nn.L1Loss(reduction = 'sum')(noise_estimated, noise)
   loss = a + b
   return loss
   
-def plot_modelPerformance(history, clean, dirty):
+def plot_modelPerformance(history, clean, dirty, model):
+  sns.set_style('whitegrid')
   plt.figure(figsize = (30, 6))
   plt.subplot(1, 3, 1)
   plt.plot(history['train'], label = 'loss')
@@ -171,3 +173,12 @@ def plot_modelPerformance(history, clean, dirty):
   plt.ylabel('Amplitude')
   plt.title('Denoise plot')
   plt.show()
+  
+def l1_mse_loss(output, target):
+  a = nn.L1Loss(reduction='sum')(output, target)
+  b = nn.MSELoss(reduction = 'sum')(output, target)
+  return a + b
+
+def splitAudio(audio, target_field_length):
+    duration = audio.size()[1]/target_field_length
+    return np.array_split(audio, duration, axis = 1)

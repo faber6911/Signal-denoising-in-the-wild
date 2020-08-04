@@ -1,0 +1,3 @@
+- loss &rarr; EnergyConservingLoss sum
+- target_field_length &rarr; 16000 from 64000 ms audios
+- last conv layers &rarr; 2048, 256

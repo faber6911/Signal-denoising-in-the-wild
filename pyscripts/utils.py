@@ -178,3 +178,7 @@ def l1_mse_loss(output, target):
   a = nn.L1Loss(reduction='sum')(output, target)
   b = nn.MSELoss(reduction = 'sum')(output, target)
   return a + b
+
+def splitAudio(audio, target_field_length):
+    duration = audio.size()[1]/target_field_length
+    return np.array_split(audio, duration, axis = 1)

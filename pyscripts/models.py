@@ -4,6 +4,10 @@ from torch.nn import functional as F
 import numpy as np
 import math
 
+def splitAudio(audio, target_field_length):
+    duration = int(audio.size()[1]/target_field_length)
+    return torch.chunk(audio, chunks = duration, axis = 1)
+
 #----- WaveNet
 
 class ResidualConv1dGLU(nn.Module):
@@ -101,17 +105,17 @@ class ResidualConv1dGLU(nn.Module):
         return x, s
     
 class DWaveNet(nn.Module):
-    def __init__(self, in_channels, out_channels=1, bias=False,
+    def __init__(self, in_channels, target_field_length, out_channels=1, bias=False,
                  num_layers=30, num_stacks=3,
                  kernel_size=3,
                  residual_channels=128, gate_channels=128, skip_out_channels=128,
-                 last_channels=(2048, 256),
+                 last_channels=(2048, 256)
                  ):
         super().__init__()
         assert num_layers % num_stacks == 0
         num_layers_per_stack = num_layers // num_stacks
         self.l_diff = num_stacks * (2**num_layers_per_stack - 1)
-
+        self.target_field_length = target_field_length
         self.first_conv = nn.Conv1d(in_channels, residual_channels, 3, padding=1, bias=bias)
 
         self.conv_layers = nn.ModuleList()
@@ -135,23 +139,76 @@ class DWaveNet(nn.Module):
             nn.Conv1d(last_channels[1], out_channels, 1, bias=True)
         )
 
-    def forward(self, x):
-        #x = x.unsqueeze(1)
-        x = self.first_conv(x)
-        #print(self.l_diff)
-        #print(x.shape)
-        skips = None
-        for conv in self.conv_layers:
-            x, h = conv(x)
-            #print(x.shape, h.shape)
-            if skips is None:
-                skips = h[...,]#h[..., self.l_diff:-self.l_diff]
-            else:
-                skips += h[...,]#h[..., self.l_diff:-self.l_diff]
-        
-        #print(x.shape)
-        x = skips
-        #print(x.shape)
-        x = self.last_conv_layers(x)
 
-        return x
+    def forward(self, x):
+        if self.target_field_length is not None:
+            output = []
+            for audio in x:
+                total = []
+                chunks = int(audio.size()[1]/self.target_field_length)
+                for frames in torch.chunk(audio, chunks = chunks, dim = 1):
+                    frames = self.first_conv(frames.unsqueeze(0))
+                    skips = None
+                    for conv in self.conv_layers:
+                        frames, h = conv(frames)
+                        if skips is None:
+                            skips = h[...,]#h[..., self.l_diff:-self.l_diff]
+                        else:
+                            skips += h[...,]#h[..., self.l_diff:-self.l_diff]
+                    frames = skips
+                    frames = self.last_conv_layers(frames)
+                    total.append(frames.squeeze(0))
+
+                output.append(torch.cat(total, dim = 1))
+            output = torch.stack(output)
+            
+        else:
+            x = self.first_conv(x)
+            skips = None
+            for conv in self.conv_layers:
+                x, h = conv(x)
+                if skips is None:
+                    skips = h[...,]
+                else:
+                    skips += h[...,]
+            x = skips
+            output = self.last_conv_layers(x)
+        
+        return output
+        
+#         x = self.first_conv(x)
+#         skips = None
+#         for conv in self.conv_layers:
+#             x, h = conv(x)
+#             if skips is None:
+#                 skips = h[...,]#h[..., self.l_diff:-self.l_diff]
+#             else:
+#                 skips += h[...,]#h[..., self.l_diff:-self.l_diff]
+        
+#         #print(x.shape)
+#         x = skips
+#         #print(x.shape)
+#         x = self.last_conv_layers(x)
+
+#         return x
+
+#     def forward(self, x):
+#         #x = x.unsqueeze(1)
+#         x = self.first_conv(x)
+#         #print(self.l_diff)
+#         #print(x.shape)
+#         skips = None
+#         for conv in self.conv_layers:
+#             x, h = conv(x)
+#             #print(x.shape, h.shape)
+#             if skips is None:
+#                 skips = h[...,]#h[..., self.l_diff:-self.l_diff]
+#             else:
+#                 skips += h[...,]#h[..., self.l_diff:-self.l_diff]
+        
+#         #print(x.shape)
+#         x = skips
+#         #print(x.shape)
+#         x = self.last_conv_layers(x)
+
+#         return x

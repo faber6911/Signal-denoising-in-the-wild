@@ -29,5 +29,9 @@ def tuneThresholdfromScore(scores, labels, target_fa, target_fr = None):
     
     idxE = numpy.nanargmin(numpy.absolute((fnr - fpr)))
     eer  = max(fpr[idxE],fnr[idxE])
+    # need to add accuracy score based on threshold
+    threshold = thresholds[idxE]
+    y_pred = numpy.where(scores >= threshold, 1, 0)
+    acc = metrics.accuracy_score(labels, y_pred)*100
     
-    return (tunedThreshold, eer, fpr, fnr);
+    return (tunedThreshold, eer, acc, fpr, fnr);

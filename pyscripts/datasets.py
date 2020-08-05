@@ -119,10 +119,10 @@ class SequenceDataset(torch.utils.data.Dataset):
         id_count = {}
         for line in open(utt2spkid_file):
             utt, label = line.rstrip().split()
-            self.utt2spkid[utt] = int(label)
-            if not int(label) in id_count:
-                id_count[int(label)] = 0
-            id_count[int(label)] += 1
+            self.utt2spkid[utt] = int(label.replace('id', ''))
+            if not int(label.replace('id', '')) in id_count:
+                id_count[int(label.replace('id', ''))] = 0
+            id_count[int(label.replace('id', ''))] += 1
         max_id_count = int((max(id_count.values())+1)/2)
         
         for line in open(scp_file):

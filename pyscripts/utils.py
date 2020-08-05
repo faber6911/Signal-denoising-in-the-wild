@@ -153,6 +153,7 @@ def plot_modelPerformance(history, clean, dirty, model):
   #clean, dirty, _ = test_data.dataset[idx]
   dirty = dirty.unsqueeze(0).cuda()
   with torch.no_grad():
+    model.eval()
     denoised = model(dirty)
   denoised = denoised.cpu().squeeze(0)
   dirty = dirty.cpu().squeeze(0)

@@ -1,3 +1,4 @@
 - loss &rarr; EnergyConservingLoss sum
-- target_field_length &rarr; 16000 from 64000 ms audios
+- target_field_length &rarr; None from 16000 length audios
 - last conv layers &rarr; 2048, 256
+- dataset SIWIS + VoxCeleb2_test

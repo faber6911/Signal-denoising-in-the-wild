@@ -814,7 +814,6 @@ EN_B_25_140 /opt/kaldi/egs/Signal-denoising-in-the-wild/data/test/test.ark:33100
 EN_B2_13_405 /opt/kaldi/egs/Signal-denoising-in-the-wild/data/test/test.ark:331411306
 EN_B2_13_405 /opt/kaldi/egs/Signal-denoising-in-the-wild/data/test/test.ark:331856925
 EN_B2_13_405 /opt/kaldi/egs/Signal-denoising-in-the-wild/data/test/test.ark:332302544
-
 id01541/5J8Tj9YCCZY/00014 /opt/kaldi/egs/Signal-denoising-in-the-wild/data/test/testVoxCeleb.ark:26
 id02057/c1nli4esA2o/00326 /opt/kaldi/egs/Signal-denoising-in-the-wild/data/test/testVoxCeleb.ark:303178
 id02019/JzUEx_abwAU/00053 /opt/kaldi/egs/Signal-denoising-in-the-wild/data/test/testVoxCeleb.ark:635002

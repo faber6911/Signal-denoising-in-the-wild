@@ -7342,7 +7342,6 @@ EN_A_30_116 /opt/kaldi/egs/Signal-denoising-in-the-wild/data/train/train.ark:306
 EN_C_26_179 /opt/kaldi/egs/Signal-denoising-in-the-wild/data/train/train.ark:3063044202
 EN_C_26_179 /opt/kaldi/egs/Signal-denoising-in-the-wild/data/train/train.ark:3063569832
 EN_C_26_179 /opt/kaldi/egs/Signal-denoising-in-the-wild/data/train/train.ark:3064095462
-
 id04536/ADf-bfBdFWc/00167 /opt/kaldi/egs/Signal-denoising-in-the-wild/data/train/trainVoxCeleb.ark:26
 id06104/A4qDQpfYGzY/00079 /opt/kaldi/egs/Signal-denoising-in-the-wild/data/train/trainVoxCeleb.ark:270410
 id08701/vQ4Kn8OMMgQ/00426 /opt/kaldi/egs/Signal-denoising-in-the-wild/data/train/trainVoxCeleb.ark:696442

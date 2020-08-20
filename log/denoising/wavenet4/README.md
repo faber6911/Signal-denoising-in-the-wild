@@ -1,3 +1,4 @@
 - loss &rarr; EnergyConservingLoss sum
 - target_field_length &rarr; 16000 with 16000 ms audios
 - last conv layers &rarr; 2048, 256
+- dataset &rarr; SIWIS

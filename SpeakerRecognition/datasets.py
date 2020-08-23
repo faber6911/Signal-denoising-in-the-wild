@@ -119,10 +119,10 @@ class SequenceDataset(torch.utils.data.Dataset):
         id_count = {}
         for line in open(utt2spkid_file):
             utt, label = line.rstrip().split()
-            self.utt2spkid[utt] = int(label)
-            if not int(label) in id_count:
-                id_count[int(label)] = 0
-            id_count[int(label)] += 1
+            self.utt2spkid[utt] = int(label.replace('id', ''))
+            if not int(label.replace('id', '')) in id_count:
+                id_count[int(label.replace('id', ''))] = 0
+            id_count[int(label.replace('id', ''))] += 1
         max_id_count = int((max(id_count.values())+1)/2)
         
         for line in open(scp_file):
@@ -159,6 +159,7 @@ class SequenceDataset(torch.utils.data.Dataset):
         full_mat_clean, full_mat_noisy = kaldiio.load_mat(rxfile)
         #assert len(full_mat) >= self.seq_len
         pin = np.random.randint(0, len(full_mat_clean) - self.seq_len + 1)
+        #pin = 16000
         chunk_mat_clean = full_mat_clean[pin:pin+self.seq_len]
         chunk_mat_noisy = full_mat_noisy[pin:pin+self.seq_len]
         y = np.array(self.labels[index])

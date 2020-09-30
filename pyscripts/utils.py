@@ -137,7 +137,7 @@ def EnergyConservingLoss(data, output, target):
   loss = a + b
   return loss
   
-def plot_modelPerformance(history, clean, dirty, model):
+def plot_modelPerformance(history, clean, dirty, model, cuda = True, save_path = None):
   sns.set_style('whitegrid')
   plt.figure(figsize = (30, 6))
   plt.subplot(1, 3, 1)
@@ -151,7 +151,10 @@ def plot_modelPerformance(history, clean, dirty, model):
   plt.subplot(1, 3, 2)
   #idx = np.random.randint(len(test_data.dataset))
   #clean, dirty, _ = test_data.dataset[idx]
-  dirty = dirty.unsqueeze(0).cuda()
+  if cuda:
+      dirty = dirty.unsqueeze(0).cuda()
+  else:
+      dirty = dirty.unsqueeze(0)
   with torch.no_grad():
     model.eval()
     denoised = model(dirty)
@@ -173,6 +176,8 @@ def plot_modelPerformance(history, clean, dirty, model):
   plt.xlabel('Time [ms]')
   plt.ylabel('Amplitude')
   plt.title('Denoise plot')
+  if save_path is not None:
+    plt.savefig(save_path)
   plt.show()
   
 def l1_mse_loss(output, target):

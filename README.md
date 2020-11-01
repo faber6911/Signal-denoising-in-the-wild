@@ -39,7 +39,7 @@ The <a href="https://github.com/faber6911/Signal-denoising-in-the-wild/tree/mast
 
 <a name="report"></a>
 ## &#9741; &nbsp; Report
-The text of the thesis in pdf format is available <a href="https://github.com/faber6911/Signal-denoising-in-the-wild/tree/master/report/audio_denosing_in_the_wild.pdf">here</a>.
+The text of the thesis in pdf format is available <a href="https://github.com/faber6911/Signal-denoising-in-the-wild/tree/master/report/audio_denoising_in_the_wild.pdf">here</a>.
 Acknowledgments are yet to be defined.
 
 <a name="presentation"></a>

@@ -40,11 +40,12 @@ The <a href="https://github.com/faber6911/Signal-denoising-in-the-wild/tree/mast
 <a name="report"></a>
 ## &#9741; &nbsp; Report
 The text of the thesis in pdf format is available <a href="https://github.com/faber6911/Signal-denoising-in-the-wild/tree/master/report/audio_denosing_in_the_wild.pdf">here</a>.
-
+Acknowledgments are yet to be defined.
 
 <a name="presentation"></a>
 ## &#9741; &nbsp; Presentation
-The presentation slides of the thesis work are available <a href="https://github.com/faber6911/Signal-denoising-in-the-wild/tree/master/presentation/thesis_presentation.pdf">here</a>.
+Still work in progress.
+<!--The presentation slides of the thesis work are available <a href="https://github.com/faber6911/Signal-denoising-in-the-wild/tree/master/presentation/thesis_presentation.pdf">here</a>.-->
 
 <a name="aboutme"></a>
 

@@ -7,11 +7,11 @@
 <h6 align = "center">a Master Degree Thesis project</h6>
 
 <p align="center">
-  <a href="#overview">Overview</a>|
-  <a href="#data">Data</a>|
-  <a href="#report">Report</a>|
-  <a href="#presentation">Presentation</a>|
-  <a href="#aboutme">&nbsp; About me</a>
+  <a href="#overview">Overview &nbsp;</a>|
+  <a href="#data">Data &nbsp;</a>|
+  <a href="#report">Report &nbsp;</a>|
+  <a href="#presentation">Presentation &nbsp;</a>|
+  <a href="#aboutme">About me</a>
 </p>
 
 

@@ -6,3 +6,5 @@ __pycache__
 data/serialized_train_data
 data/serialized_test_data
 data/VoxCeleb1_test
+src/
+docs/

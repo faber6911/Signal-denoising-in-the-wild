@@ -21,7 +21,7 @@ Overview.
 
 <a name="data"></a>
 ## &#9741; &nbsp; Data
-Presentazione dei dati.
+The <a href="https://github.com/faber6911/Signal-denoising-in-the-wild/tree/master/data">data</a> folder contains all the scp (script) files with the paths leading to the audio files in my machines. 
 
 <a name="code"></a>
 ## &#9741; &nbsp; Code

@@ -8,3 +8,4 @@ data/serialized_test_data
 data/VoxCeleb1_test
 src/
 docs/
+docker_procedure.txt

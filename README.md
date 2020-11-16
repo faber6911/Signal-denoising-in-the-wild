@@ -43,7 +43,7 @@ The text of the thesis in pdf format is available <a href="https://github.com/fa
 
 <a name="presentation"></a>
 ## &#9741; &nbsp; Presentation
-The presentation slides of the thesis work are available <a href="https://github.com/faber6911/Signal-denoising-in-the-wild/blob/master/presentation/AudioDenoisingInTheWild_presentazione.pdf">here</a>
+The presentation slides of the thesis work are available <a href="https://github.com/faber6911/Signal-denoising-in-the-wild/blob/master/presentation/AudioDenoisingInTheWild_presentazione.pdf">here</a>.
 
 <a name="aboutme"></a>
 
